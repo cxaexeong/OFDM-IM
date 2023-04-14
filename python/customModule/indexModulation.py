@@ -146,10 +146,11 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수
 
             ############### Transmission over Rayleigh fading channel and AWGN noise ###############
             #noise = 1/sqrt(2)*(randn(size(tx_sym))+1i*randn(size(tx_sym)))
-            noise = 1/sqrt(2)*random.randint((tx_sym.size)) + np.imag(1)*random.randint(tx_sym.size) #Modified
             #h = 1/sqrt(2)*(randn(size(tx_sym))+1i*randn(size(tx_sym)))*sqrt(1-eps)
-            h = 1/sqrt(2)*random.randint(tx_sym.size) + np.imag(1) * random.randint(tx_sym.size) * sqrt(1-eps) #Modified
             #e=sqrt(eps)./sqrt(2)*(randn(size(tx_sym))+1i*randn(size(tx_sym)))
+            
+            noise = 1/sqrt(2)*random.randint((tx_sym.size)) + np.imag(1)*random.randint(tx_sym.size) #Modified
+            h = 1/sqrt(2)*random.randint(tx_sym.size) + np.imag(1) * random.randint(tx_sym.size) * sqrt(1-eps) #Modified
             e=sqrt(eps)/sqrt(2)*random.randint(tx_sym.size) + np.imag(1) * random.randint(tx_sym.size) #Modified
             h1=h+e
             y = sqrt(EsN0(s1))*h1*tx_sym+noise #Modified *
