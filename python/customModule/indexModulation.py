@@ -28,7 +28,7 @@ LLR = 1; # select one of two types of LLR detector
 ro=0
 Mary=1; # 1 PSK, 2 QAM
 if(M==8) :
-    QAM = (5*M-4)/6; # QAM power scale factor # Modified ./ -> /
+    QAM = (5*M-4)/6; # QAM power scale factor #Modified ./ -> /
 else :
     QAM = (2/3)*(M-1)
 
@@ -57,15 +57,15 @@ else :
 sym_test = np.zeros(M,1)
 for qq in range(M,1):
     if (Mary == 1):
-        sym_test(qq) = pskmod(qq-1, M, ro*pi/M,'gray') # Modified ./ -> /
+        sym_test.qq = pskmod(qq-1, M, ro*pi/M,'gray') #Modified qq and ./ -> /
     else:
-        sym_test(qq)=qammod(qq-1,M,0,'gray')
+        sym_test.qq=qammod(qq-1,M,0,'gray') #Modified
 
 ref_sym = sym_test
 if(Mary==1):
-    ref_symmm = ref_sym*(1./abs(ref_sym)) # PSK # Modified .* -> *
+    ref_symmm = ref_sym*(1./abs(ref_sym)) # PSK #Modified .* -> *
 else:
-    ref_symmm = ref_sym*(1/sqrt(QAM)) # QAM # Modified .* -> *
+    ref_symmm = ref_sym*(1/sqrt(QAM)) # QAM #Modified .* -> *
 
 
 ############### Loop for SNR ###############
@@ -76,7 +76,7 @@ BER=np.zeros(1,np.ndarray.shape(sigma,2))
 BER1=np.zeros(1,np.ndarray.shape(sigma,2)) # index bit error rate
 BER2=np.zeros(1,np.ndarray.shape(sigma,2)) # M-ary bit error rate
 
-for s1 in range(1,np.ndarray.shape(sigma,3)): # Modified _ range (sigma,2->3) 수정
+for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수정
     print('== EbN0(dB) is %g == \n',EbN0dB(s1))
     ############### Loop for iteration ###############
     symerr_mcik = np.zeros(1,iter)
@@ -88,44 +88,51 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): # Modified _ range (sigma,2->3) �
     for s2 in range(1,iter):
         print('== EbN0(dB) is %g and iteration is %g == \n',EbN0dB(s1),s2)
         ############### Bit generator ###############
-        # bit = (index bit + M-ary bps) * symbols in OFDM frame
-        bit = random.randint(range(0,2),1,(p1+p2)*nSymPerFrame) # Modified_[0,1]
-        # bit split - reshape bit stream (p1+p2)
-        bit2 = np.ndarray.reshape(bit.',p1+p2,nSymPerFrame.') #TODO_reshape 소괄호 두개씀, 수정
-        
+        ## bit = (index bit + M-ary bps) * symbols in OFDM frame
+        bit = random.randint(range(0,2),1,(p1+p2)*nSymPerFrame) #Modified_[0,1]
+        ## bit split - reshape bit stream (p1+p2)
+        ## bit2 = np.ndarray.reshape(bit.',p1+p2,nSymPerFrame.') #TODO_reshape 소괄호 두개씀, 수정
+        bit2 = np.ndarray.reshape((bit),(p1+p2, nSymPerFrame))
+
         ############### Index selector ###############
         # information bits (p2)
-        info_bit = bit2(:,p1+1:end)
+        # info_bit = bit2(:,p1+1:end)
+        info_bit = bit2([],[p1+1,]) #Modified 위에걸 이렇게 바꾸는게 맞나..?
         # M-ary data symbol
-        sym=[]
+        sym=[] #배열 생성
         x=1
         for i in range(1,K+1):
             y = bps * i
-            info_bit_i= info_bit(:,x:y)
+            # info_bit_i= info_bit(:,x:y)
+            info_bit_i= info_bit[[],[x,y]] #Modified 위에걸 이렇게 바꾸는게 맞나..?
             x = y + 1
-            info_dec_i = bi2de(info_bit_i) # from binary to decimal
+            # info_dec_i = bi2de(info_bit_i) # from binary to decimal
+            binary_info_bit_i = info_bit_i #Modified
+            decimal_info_bit_i = int(binary_info_bit_i) #Modified
             # sym_i = sym_test(info_dec_i+1);
             if(Mary==1) :
-                sym_i = pskmod(info_dec_i,M,ro*pi./M,'gray')
-            elif (Mary!=1) :                            #임시로 조건 걸어놈 ㅠ.ㅠ 저거 수정해야함 흑
-                sym_i = qammod(info_dec_i,M,0,'gray')
+                sym_i = pskmod(decimal_info_bit_i,M,ro*pi/M,'gray') #Modified 
+            elif (Mary!=1) :  #Modified 임시로 조건 걸어놈 ㅠ.ㅠ 저거 수정해야함 흑
+                sym_i = qammod(decimal_info_bit_i,M,0,'gray') #Modified 
             else :
-                sym(:,i)=sym_i
+                # sym(:,i)=sym_i 
+                sym [[],i] = sym_i #Modified
 
             # index bits (p1)
-            index_bit = bit2(:,1:p1)
+            # index_bit = bit2(:,1:p1)
+            index_bit = bit2[[],[1,p1]]
             # index symbol ( bit to decimal ), select indices from combinatorial method
             index_sym = BitoDe(index_bit)
             # Set average symbol power to 1
-            sym_norm = sym.*(1./abs(sym))
+            sym_norm = sym*(1./abs(sym)) #Modified .* -> *
             # Power reallocation
-            sym_tx = sym_norm.*sqrt(PwrSC)
+            sym_tx = sym_norm*sqrt(PwrSC) #Modified .* -> *
             # transmitted OFDM symbols
             tx_sym = np.zeros(N,nSymPerFrame)
             for kk in range(1,nSymPerFrame+1):
                 kk_index = index_sym(kk)+1
-                indices = index_all(kk_index,:)+1
-                tx_sym(indices,kk) = sym_tx(kk,:)
+                indices = index_all([kk_index,])+1  #Modified
+                tx_sym[indices,kk] = sym_tx[kk,] #Modified
 
 
 
