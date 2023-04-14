@@ -8,6 +8,7 @@
 
 
 from math import comb, floor, log2, pi, sqrt
+from matplotlib import image
 import numpy as np
 from gnuradio import gr
 import random
@@ -47,6 +48,7 @@ p2 = K*bps; # information bit length per cluster
 p=p1+p2; # total number of bits
 
 ############### Reference M-ary and index symbols used for detection ###############
+index_all = comb(N,K) #Modified
 if(K==2 & N==4) :
     # index_all = [1 0;2 0;3 1;3 2] # optimal combination for this case
     index_all = comb(N,K)
@@ -120,7 +122,7 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수
 
             # index bits (p1)
             # index_bit = bit2(:,1:p1)
-            index_bit = bit2[[],[1,p1]]
+            index_bit = bit2[[],[1,p1]] #Modified
             # index symbol ( bit to decimal ), select indices from combinatorial method
             index_sym = BitoDe(index_bit)
             # Set average symbol power to 1
@@ -133,6 +135,41 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수
                 kk_index = index_sym(kk)+1
                 indices = index_all([kk_index,])+1  #Modified
                 tx_sym[indices,kk] = sym_tx[kk,] #Modified
+
+            ############### CSI error variance ###############
+            if(CSI==1) :
+                eps=0       #perfect CSI
+            elif (CSI==2) :
+                eps=var     #fixed CSI
+            else :
+                eps=1/(1+mmse*EsN0(s1))     #variable CSI
+
+            ############### Transmission over Rayleigh fading channel and AWGN noise ###############
+            #noise = 1/sqrt(2)*(randn(size(tx_sym))+1i*randn(size(tx_sym)))
+            noise = 1/sqrt(2)*random.randint((tx_sym.size)) + np.imag(1)*random.randint(tx_sym.size) #Modified
+            #h = 1/sqrt(2)*(randn(size(tx_sym))+1i*randn(size(tx_sym)))*sqrt(1-eps)
+            h = 1/sqrt(2)*random.randint(tx_sym.size) + np.imag(1) * random.randint(tx_sym.size) * sqrt(1-eps) #Modified
+            #e=sqrt(eps)./sqrt(2)*(randn(size(tx_sym))+1i*randn(size(tx_sym)))
+            e=sqrt(eps)/sqrt(2)*random.randint(tx_sym.size) + np.imag(1) * random.randint(tx_sym.size) #Modified
+            h1=h+e
+            y = sqrt(EsN0(s1))*h1*tx_sym+noise #Modified *
+            avSNR=sqrt(EsN0(s1))
+
+            ############### ML / LLR / Greedy detectors ###############
+            #Not yet, maybe unnecessary
+
+            ############### error rate computation ###############
+            #ofdm symbol error
+            #index symbol error
+            #index symbol to bit, index bit error
+            #QAM symbol to bit
+
+            ############### symbol & bit error rate  1 iteration ###############
+            #Not yet
+
+            ############### average bit error rate ###############
+            #Not yet
+            
 
 
 
