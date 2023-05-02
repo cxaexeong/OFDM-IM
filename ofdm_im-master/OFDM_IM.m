@@ -34,7 +34,7 @@ CSI=1; % 1 perfect CSI, 2 fixed CSI error variance, 3 MMSE variable CSI error va
 Detect_method =1; % to select 1 ML, 2 LLR, 3 Greedy GD detector
 LLR = 1; % select one of two types of LLR detector
 
-ro=0;
+ro=0;-
 Mary=1; % 1 PSK, 2 QAM
 if(M==8)
     QAM = (5*M-4)./6; % QAM power scale factor

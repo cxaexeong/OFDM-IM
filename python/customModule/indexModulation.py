@@ -82,7 +82,7 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수
     print('== EbN0(dB) is %g == \n',EbN0dB(s1))
     ############### Loop for iteration ###############
     symerr_mcik = np.zeros(1,iter)
-    symerr_ofdm = np.zeros(1,iter)
+    symerr_ofdm = np.zeros(1,iter)############### Bit generator ###############
     symerr_iter= np.zeros(1,iter)
     BER_iter= np.zeros(1,iter)
     BER_iter_1= np.zeros(1,iter)
@@ -91,7 +91,7 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수
         print('== EbN0(dB) is %g and iteration is %g == \n',EbN0dB(s1),s2)
         ############### Bit generator ###############
         ## bit = (index bit + M-ary bps) * symbols in OFDM frame
-        bit = random.randint(range(0,2),1,(p1+p2)*nSymPerFrame) #Modified_[0,1]
+        bit = np.random.randint(range(0,2),1,(p1+p2)*nSymPerFrame) #Modified_[0,1]
         ## bit split - reshape bit stream (p1+p2)
         ## bit2 = np.ndarray.reshape(bit.',p1+p2,nSymPerFrame.') #TODO_reshape 소괄호 두개씀, 수정
         bit2 = np.ndarray.reshape((bit),(p1+p2, nSymPerFrame))
@@ -108,7 +108,7 @@ for s1 in range(1,np.ndarray.shape(sigma,3)): #Modified _ range (sigma,2->3) 수
             # info_bit_i= info_bit(:,x:y)
             info_bit_i= info_bit[[],[x,y]] #Modified 위에걸 이렇게 바꾸는게 맞나..?
             x = y + 1
-            # info_dec_i = bi2de(info_bit_i) # from binary to decimal
+            # info_dec_i = bi2de(info_bit_i) #from binary to decimal
             binary_info_bit_i = info_bit_i #Modified
             decimal_info_bit_i = int(binary_info_bit_i) #Modified
             # sym_i = sym_test(info_dec_i+1);
